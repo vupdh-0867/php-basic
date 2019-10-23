@@ -496,7 +496,6 @@ Following example take two arguments and return sum of them.
     return $num1 + $num2;
   }
 
-
   echo "Sum of 5 and 10 is ". sum(5, 10);
 ?>
 ```
@@ -523,6 +522,23 @@ Results:
 > This is a Square\
 > This is a Circle
 
+See example below to undstanding more about default value:
+
+```php
+<?php
+  function draw($shape = "Circle", $color) {
+    echo "This is a $color $shape\n";
+  }
+
+  function draw2($color, $shape = "Circle") { // The arguments have default value must be passing later
+    echo "This is a $color $shape\n";
+  }
+
+  draw("Red"); // It will be raise an error with missing agrument
+  draw2("Red"); // This is a Red Circle
+?>
+```
+
 ### Dynamic function calls
 
 It is possible to assign function names as string to variables and using it as function name.
@@ -533,10 +549,20 @@ It is possible to assign function names as string to variables and using it as f
     echo "Hello world!";
   }
 
+  // using a variable
   $function_holder = "hello";
   $function_holder();
+
+  // using call_user_func() method
+  call_user_func($function_holder);
+
+  // using eval() method 
+  $function_name = "hello();";
+  eval($function_name);
 ?>
 ```
+
+You can read [here](https://www.geeksforgeeks.org/how-to-call-php-function-from-string-stored-in-a-variable/) to more information about dynamic functions.
 
 ## 6. Operators
 PHP devides the operators in the following group:
