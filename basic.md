@@ -927,3 +927,230 @@ Results:
 > The name of student is qtv\
 > The name of student is vu\
 > The name of student is hai
+
+## OOP
+Các tính chất của lập trình hướng đối tượng:
+
+### **Tính đóng gói**
+- Tính đóng gói(encapsulation): "Đóng gói" các thuộc tính và phương thức của đối tượng(hoặc lớp) thông qua việc giới hạn quyền truy cập(hoặc thay đổi) giá trị của thuộc tính hoặc thực thi phương thức. 
+- Trong PHP việc đóng gói được phân theo 3 cấp độ:
+  - `public`: Có thể truy cập các thuộc tính và phương thức ở bất cứ đâu, mặc định là public
+  - `protected`: Có thể truy cập các thuộc tính và phương thức ở trong class hoặc các class con
+  - `private`: Chỉ có thể truy cập các thuộc tính và phương ở trong class đó
+
+- cùng xem qua ví dụ phía dưới để hiểu rõ hơn về 3 loại truy cập trên:
+
+```php
+<?php
+class People {
+  public function talk() {
+    echo "I know speak\n";
+  }
+
+  protected function eat() {
+    echo "I know eat\n";
+  }
+
+  private function run() {
+    echo "I know run\n";
+  }
+
+  public function eatFood() {
+    self::eat();
+  }
+
+  public function runFlash() {
+    self::run(); // only access private method using within class
+  }
+}
+
+class Customer extends People {
+  public function runFlash() {
+    self::run(); // can't access private method to supper class
+  }
+
+  public function eatFood() {
+    self::eat(); // can access protected method to super class
+  }
+}
+
+People::talk();
+People::eatFood();
+People::runFlash();
+People::run(); // can't access private method outside class
+
+Customer::talk();
+Customer::eatFood();
+Customer::runFlash();
+?>
+```
+
+### **Tính kế thừa**
+- Tính thừ kế cho phép các class con kế thừa lại các thuộc tính và phương thức(protected và publish) được định nghĩa trong class cha
+- Sử dụng từ khóa `extends` để kế thừa
+- Trong php chỉ hỗ trợ đơn thừa kế, có nghĩa là một class chỉ kế thừa từ một class khác. Để sử dụng đa kế thừa thì php có sinh ra một thuật ngữ khá hay đó Traits(nếu các bạn đã từng làm việc vs ruby thì thằng này có vẻ giống mixin trong ruby)
+
+- Ví dụ:
+
+```php
+<?php
+  class Animal {
+    private $name;
+    
+    public function __construct($name) {
+      $this->name = $name;
+    }
+
+    public function hello() {
+      echo "Hi! I'm an animal. My name is $this->name";
+    }
+  }
+
+  class Dog extends Animal{
+    
+  }
+
+  $dogi = new Dog("Dogi");
+  $dogi->hello(); // Hi! I'm an animal. My name is Dogi
+?>
+```
+
+### **Tính trừu tượng**
+- Trong các tính chất thì tính trừu tượng thường làm cho các ae new dev hay loạn não.
+- Tính trừ tượng hiểu đơn giản là nó ẩn những cái tính chất, đặc điểm, chi tiết(trong ngôn ngữ lập trình thì có thể xem những cái này là thuộc tính và phương thức) của đối tượng đi và chỉ hiển thị ra những cái cốt lõi một cách tổng thể.
+- Vì vậy nó giúp chúng ta có 1 cách nhìn tổng quát về đối tượng thay vì phải quan tâm tất tần tật những thứ có trong nó và cách chúng thực thi như thế nào.
+- Có 2 từ khóa bạn cần biết khi nói tới tính trừu tượng trong lập trình hướng đối tượng đó là `abstract` và `interface`
+- Sau đây là một ví dụ để mọi người hiểu hơn về tính chất này:
+
+Giả sử chúng ta có:
+- Một `abstract` class `Animal` có chứa phương thức `hello()`, phương thức này chỉ khai báo tên chứ không implement(đây là rule khi mình khai báo phương thức trong `abstract` class).
+- Một `interface` là `Action` có chứa phương thức `run()`, phương thức này cũng chỉ được khai báo tên thôi.
+- Có một class Cat kế thừa lại lớp abstract `Animal` thông qua từ khóa `extends` và interface `Action` qua từ khóa `implements`.
+
+```php
+<?php
+abstract class Animal {
+  abstract protected function hello() : string; // một phương thức abstract phải được khai báo bắt đầu với từ khóa abstract
+}
+
+interface Action {
+  function run();
+}
+
+class Cat extends Animal implements Action {
+  function hi() {
+    echo "Hi";
+  }
+
+  // các lớp con kết thừa abstract class thì phải định nghĩa lại những phương thức đã được khai báo trong abstract class
+  public function hello() : string {
+    return "hello viet name";
+  }
+
+  // cũng giống như abstract class, một class kế thừa interface thì phải định nghĩa lại những phương thức đã được khai báo trong interface
+  function run() {
+    echo "Running!";
+  }
+}
+
+// Cat::hi();
+$cat = new Cat;
+$cat->hi();
+echo $cat->hello();
+```
+
+Dưới đây là bảng thông kê những điểm khác biệt giữa `abstract` và `interface`:
+
+a | Abstract | Interface
+- | -------- | ---------
+Multiple inheritance | Không hỗ trợ đa thừa kế | Một class có thể hiện thực nhiều interface
+Access modifiers | Có thể xác định modifier | Mọi phương thức, property đều mặc định là public
+Adding functionality | Không cần thiết | Mọi phương thức, property của interface cần được thực hiện trong class
+Fields và Constants | Có | Không  
+
+
+**Thực chất `abstract` được xem như là `bản thiết kết cho class` còn `interface` là `bản thiết kế cho method`**
+
+### **Tính đa hình**
+- Tính đa hình là gì? Hiểu một cách nôm na và thông thường thì tính đa hình là nhiều mặt, nhiều hình dạng,...
+- Các lớp con có thể viết lại hoặc mở rộng phương thức của lớp cha mà nó kế thừa.
+- Các class cùng implement một interface nhưng chúng có cách thức thực hiện khác nhau cho các method của interface đó.
+- Qua đó cùng 1 phương thức sẽ cho kết quả khác nhau khi được gọi bởi các đối tượng thuộc lớp khác nhau.
+
+```php
+<?php
+class Vehicle {
+  function say() {
+    echo "I would like to service you";
+  }
+}
+
+class Car {
+  function say() {
+    echo "I'm a Car\n";
+  }
+}
+
+class Bus {
+  function say() {
+    echo "I'm a Bus";
+  }
+}
+
+$car = new Car;
+$car->say(); // I'm a Car
+
+$bus = new Bus;
+$bus->say(); // I'm a Bus
+```
+Vẫn là phương thức `say` nhưng 2 đối tượng lại cho ra 2 kết quả khác nhau.
+
+## **Static keyword**
+- Thế nào là một phương thức static
+- Phân biệt static::method() với self::method()
+
+### **Thế nào là một phương thức static**
+- Phương thức static có thể truy thông qua class mà không cần phải khởi tạo đối tượng.
+- Khai báo một phương thức static trong một class như sau:
+
+```php
+public static function hello() {
+  // SOME CODE HERE
+}
+```
+
+- Để thực thì một phương thức `static` trong class ta có thể sử dụng những cách sau: `self::staticMethod()`, `static::staticMethod()` hoặc `$this->staticMethod()`. Trong đó `self` và `static` là đại diện cho `class`, còn `$this` thì đại diện cho `object`.
+- Trong phương thức static thì không thể gọi thuộc tính và phương thức `non-static`, những ngược lại thì `non-static` có thể gọi các phương thức hoặc thuộc tính `static`.
+
+### **Phân biệt static::method() với self::method()**
+- Cả 2 từ khóa static và self đều đại diện cho class vậy tại sao phải sinh ra cả 2 trong khi chỉ cần 1 là đủ rồi.
+- Nếu như xét phạm vi trong nội bộ của class thì 2 từ khóa này đều cho ra kết quả giống nhau.
+- Mn xem qua ví dụ phía dưới để tìm ra điểm khác biệt:
+Ở ví dụ này mình mở trọng phạm vi ra class con kế thừa class cha thì 2 từ khóa này hoạt dộng như thế nào
+
+```php
+<?php
+class Human {
+  protected static $className = 'class Human';
+
+  public static function getClassName() {
+    echo self::$className;
+    echo " - ";
+    echo static::$className."\n";
+  }
+}
+
+class Student extends Human {
+  protected static $className = 'class Student';
+}
+
+Human::getClassName(); // class Human - class Human
+Student::getClassName(); // class Human - class Student
+```
+
+Trong ví dụ trên class `Student` đã `extends` class `Human`, và class `Student` đã override lại thuộc tính `$className`.
+- Khi `Student::getClassName()` thực thi kết quả trả về là `class Human - class Student`, như vậy từ khóa self đại diện cho chính đối tượng khai báo nó, phương thức `getClassName` được khai báo trong class `Human` nên thuộc tính self trong phương thức này đại diện cho class `Human`, kết quả trả về là `class Human`. Còn `static` đại diện cho class gọi nó, ở đây class `Student` đã gọi phương thức `getClassName` nên `static` ở đây đại diện cho class `Student`.
+
+Kết luận:
+- `self`: Đại diện cho class khai báo nó
+- `static`: Đại diện cho class gọi đến nó
